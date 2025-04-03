@@ -18,8 +18,14 @@ export function TimerScreen({
   onExit,
 }: TimerScreenProps) {
   const totalTime = currentGroup.time.value * (currentGroup.time.unit === 'minutes' ? 60 : 1);
-  const progress = (currentTime / totalTime) * 100;
   const timeLeft = totalTime - currentTime;
+
+  const totalDuration = timer.timerGroups.reduce((acc, group) => {
+    const groupTime = group.time.value * (group.time.unit === 'minutes' ? 60 : 1);
+    return acc + groupTime * group.repetitions;
+  }, 0);
+
+  const overallProgress = (currentTime / totalDuration) * 100;
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -69,15 +75,34 @@ export function TimerScreen({
               </p>
             </div>
 
-            <div className="mb-8">
-              <div className="text-6xl font-bold text-center mb-4">
-                {formatTime(timeLeft)}
-              </div>
-              <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="absolute left-0 top-0 h-full bg-blue-500 transition-all duration-1000"
-                  style={{ width: `${progress}%` }}
-                />
+            <div className="mb-8 flex justify-center">
+              <div className="relative w-64 h-64 flex items-center justify-center">
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+                  <circle
+                    className="text-gray-300"
+                    strokeWidth="4"
+                    stroke="currentColor"
+                    fill="transparent"
+                    r="45"
+                    cx="50"
+                    cy="50"
+                  />
+                  <circle
+                    className="text-blue-600"
+                    strokeWidth="4"
+                    strokeDasharray="282.6"
+                    strokeDashoffset={282.6 - (282.6 * overallProgress) / 100}
+                    strokeLinecap="round"
+                    stroke="currentColor"
+                    fill="transparent"
+                    r="45"
+                    cx="50"
+                    cy="50"
+                  />
+                </svg>
+                <div className="absolute text-4xl font-bold text-center">
+                  {formatTime(timeLeft)}
+                </div>
               </div>
             </div>
 
