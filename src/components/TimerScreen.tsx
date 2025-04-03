@@ -20,12 +20,7 @@ export function TimerScreen({
   const totalTime = currentGroup.time.value * (currentGroup.time.unit === 'minutes' ? 60 : 1);
   const timeLeft = totalTime - currentTime;
 
-  const totalDuration = timer.timerGroups.reduce((acc, group) => {
-    const groupTime = group.time.value * (group.time.unit === 'minutes' ? 60 : 1);
-    return acc + groupTime * group.repetitions;
-  }, 0);
-
-  const overallProgress = (currentTime / totalDuration) * 100;
+  const groupProgress = (currentTime / totalTime) * 100;
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -91,7 +86,7 @@ export function TimerScreen({
                     className="text-blue-600"
                     strokeWidth="4"
                     strokeDasharray="282.6"
-                    strokeDashoffset={282.6 - (282.6 * overallProgress) / 100}
+                    strokeDashoffset={282.6 - (282.6 * groupProgress) / 100}
                     strokeLinecap="round"
                     stroke="currentColor"
                     fill="transparent"
