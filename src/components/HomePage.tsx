@@ -6,7 +6,7 @@ interface HomePageProps {
   onLoadTimer: (timer: SavedTimer) => void;
   onCreateNewTimer: () => void;
   onDeleteTimer: (id: string) => void;
-  onStartTimer: (timer: SavedTimer) => void; // Add this prop
+  onStartTimer: (timer: SavedTimer) => void;
 }
 
 export function HomePage({ savedTimers, onLoadTimer, onCreateNewTimer, onDeleteTimer, onStartTimer }: HomePageProps) {
@@ -21,6 +21,7 @@ export function HomePage({ savedTimers, onLoadTimer, onCreateNewTimer, onDeleteT
                 <div
                   key={timer.id}
                   className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50"
+                  onClick={() => onLoadTimer(timer)} // Call onLoadTimer when the card is clicked
                 >
                   <h3 className="font-medium">{timer.name}</h3>
                   <p className="text-sm text-gray-600">
@@ -28,19 +29,19 @@ export function HomePage({ savedTimers, onLoadTimer, onCreateNewTimer, onDeleteT
                   </p>
                   <div className="flex justify-between mt-2">
                     <button
-                      onClick={() => onLoadTimer(timer)}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      Load
-                    </button>
-                    <button
-                      onClick={() => onStartTimer(timer)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent event from bubbling up to the card
+                        onStartTimer(timer);
+                      }}
                       className="text-green-600 hover:text-green-800"
                     >
                       Start
                     </button>
                     <button
-                      onClick={() => onDeleteTimer(timer.id)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent event from bubbling up to the card
+                        onDeleteTimer(timer.id);
+                      }}
                       className="text-red-600 hover:text-red-800"
                     >
                       Delete
