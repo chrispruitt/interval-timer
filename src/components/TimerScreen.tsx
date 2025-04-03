@@ -20,11 +20,22 @@ export function TimerScreen({
   const totalTime = currentGroup.time.value * (currentGroup.time.unit === 'minutes' ? 60 : 1);
   const progress = (currentTime / totalTime) * 100;
   const timeLeft = totalTime - currentTime;
-  
+
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  const getNextGroupName = () => {
+    if (!timer || !timer.groups) {
+      return 'End';
+    }
+    const currentIndex = timer.groups.findIndex(group => group.id === currentGroup.id);
+    if (currentIndex === -1 || currentIndex === timer.groups.length - 1) {
+      return 'End';
+    }
+    return timer.groups[currentIndex + 1].name;
   };
 
   return (
@@ -41,7 +52,7 @@ export function TimerScreen({
             </button>
             <div className="flex items-center gap-2">
               <TimerIcon className="w-6 h-6" />
-              <h1 className="text-xl font-bold">{timer.name}</h1>
+              <h1 className="text-xl font-bold">{timer ? timer.name : 'Timer'}</h1>
             </div>
             <div className="w-20" /> {/* Spacer for alignment */}
           </div>
@@ -71,7 +82,7 @@ export function TimerScreen({
             </div>
 
             <div className="text-center text-gray-600">
-              <p>Next: {currentRepetition < currentGroup.repetitions ? 'Repeat current group' : 'Next group'}</p>
+              <p>Next: {getNextGroupName()}</p>
             </div>
           </div>
         </div>
