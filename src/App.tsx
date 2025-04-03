@@ -4,7 +4,7 @@ import { TimerGroup as TimerGroupComponent } from './components/TimerGroup';
 import { EditGroupModal } from './components/EditGroupModal';
 import { TimerScreen } from './components/TimerScreen';
 import { HomePage } from './components/HomePage';
-import { Play, Pause, Save, Timer as TimerIcon, Trash } from 'lucide-react';
+import { Play, Pause, Save, Timer as TimerIcon, Trash, ArrowLeft } from 'lucide-react';
 
 function App() {
   const [intervalTimers, setIntervalTimers] = useState<SavedTimer[]>(() => {
@@ -43,10 +43,11 @@ function App() {
         unit: 'seconds'
       },
     };
-    setCurrentTimer({
-      ...currentTimer,
-      timerGroups: [...currentTimer.timerGroups, newGroup],
-    });
+    setCurrentTimer((prevTimer) => ({
+      ...prevTimer,
+      timerGroups: [...prevTimer.timerGroups, newGroup],
+    }));
+    setEditingGroup(newGroup);
   };
 
   const addTimer = (groupId: string) => {
@@ -144,6 +145,21 @@ function App() {
     setCurrentRepetition(1);
   };
 
+  const goToHomePage = () => {
+    setIsHomePage(true);
+  };
+
+  const startTimerFromHome = (timer: SavedTimer) => {
+    setCurrentTimer(timer.intervalTimer);
+    setIsRunning(true);
+    setCurrentTime(0);
+    setActiveGroupIndex(0);
+    setActiveTimerIndex(0);
+    setCurrentRepetition(1);
+    setIsHomePage(false);
+    setIsTimerView(true);
+  };
+
   useEffect(() => {
     let interval: number;
 
@@ -187,7 +203,7 @@ function App() {
   }, [isRunning, activeGroupIndex, currentRepetition, currentTimer]);
 
   if (isHomePage) {
-    return <HomePage savedTimers={intervalTimers} onLoadTimer={loadTimer} onCreateNewTimer={createNewTimer} />;
+    return <HomePage savedTimers={intervalTimers} onLoadTimer={loadTimer} onCreateNewTimer={createNewTimer} onDeleteTimer={deleteTimer} onStartTimer={startTimerFromHome} />;
   }
 
   if (isTimerView) {
@@ -207,6 +223,13 @@ function App() {
       <div className="container mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={goToHomePage}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Back
+            </button>
             <div className="flex items-center gap-2">
               <TimerIcon className="w-6 h-6" />
               <h1 className="text-2xl font-bold">Interval Timer</h1>
@@ -266,35 +289,6 @@ function App() {
               Add Timer Group
             </button>
           </div>
-
-          {intervalTimers.length > 0 && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Saved Timers</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {intervalTimers.map((timer) => (
-                  <div
-                    key={timer.id}
-                    className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50"
-                  >
-                    <div className="flex justify-between items-center">
-                      <div onClick={() => loadTimer(timer)} className="cursor-pointer">
-                        <h3 className="font-medium">{timer.name}</h3>
-                        <p className="text-sm text-gray-600">
-                          {timer.intervalTimer.timerGroups.length} groups
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => deleteTimer(timer.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

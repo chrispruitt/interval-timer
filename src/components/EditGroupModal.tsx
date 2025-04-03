@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { TimerGroup } from '../types';
 import { X } from 'lucide-react';
 
@@ -10,6 +10,14 @@ interface EditGroupModalProps {
 
 export function EditGroupModal({ group, onSave, onClose }: EditGroupModalProps) {
   const [editedGroup, setEditedGroup] = React.useState<TimerGroup>({ ...group });
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (nameInputRef.current) {
+      nameInputRef.current.focus();
+      nameInputRef.current.select(); // Highlight the text
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +40,7 @@ export function EditGroupModal({ group, onSave, onClose }: EditGroupModalProps) 
             </label>
             <input
               type="text"
+              ref={nameInputRef}
               value={editedGroup.name}
               onChange={(e) => setEditedGroup({ ...editedGroup, name: e.target.value })}
               className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
